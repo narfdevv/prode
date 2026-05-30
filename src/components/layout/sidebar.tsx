@@ -14,6 +14,11 @@ export function Sidebar() {
     { href: "/rules", icon: BookOpen, label: "Reglamento" },
   ];
 
+  function handleLogout() {
+    localStorage.removeItem("isLoggedIn");
+    window.location.replace("/");
+  }
+
   return (
     <div className="fixed left-0 top-0 h-full w-[220px] bg-white border-r border-slate-200 flex flex-col">
       <div className="px-6 pt-6 pb-5">
@@ -43,14 +48,14 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3 pb-6 pt-4">
-        <Link href="/">
-          <button
-            className="py-2.5 px-4  rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2"
-            data-testid="btn-make-prediction-sidebar"
-          >
-            <LogOutIcon className="w-4 h-4 flex-shrink-0" />
-          </button>
-        </Link>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2"
+          data-testid="btn-logout-sidebar"
+        >
+          <LogOutIcon className="w-4 h-4 flex-shrink-0" />
+        </button>
       </div>
     </div>
   );

@@ -1,21 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Trophy, Mail, ArrowRight } from "lucide-react";
+import { Trophy, Mail, ArrowRight, User, IdCard } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const loginSchema = z.object({
   email: z.string().email("Ingresá un email corporativo válido"),
 });
 
+const registerSchema = z.object({
+  email: z.string().email("Ingresá un email corporativo válido"),
+  firstName: z.string().min(2, "Ingresá tu nombre"),
+  lastName: z.string().min(2, "Ingresá tu apellido"),
+});
+
 export default function Login() {
   const router = useRouter();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [registerError, setRegisterError] = useState<string | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem("isLoggedIn") === "true") {
@@ -23,12 +34,56 @@ export default function Login() {
     }
   }, [router]);
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "" },
   });
 
-  function onSubmit(_values: z.infer<typeof loginSchema>) {
+  const registerForm = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { email: "", firstName: "", lastName: "" },
+  });
+
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setIsLoggingIn(true);
+    setLoginError(null);
+
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const result = await response.json().catch(() => null);
+    setIsLoggingIn(false);
+
+    if (!response.ok) {
+      setLoginError(result?.message ?? "No pudimos validar tu email. Intentá nuevamente.");
+      return;
+    }
+
+    localStorage.setItem("isLoggedIn", "true");
+    router.push("/forecast");
+  }
+
+  async function onRegister(values: z.infer<typeof registerSchema>) {
+    setIsRegistering(true);
+    setRegisterError(null);
+
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const result = await response.json().catch(() => null);
+    setIsRegistering(false);
+
+    if (!response.ok) {
+      setRegisterError(result?.message ?? "No pudimos completar el registro. Intentá nuevamente.");
+      return;
+    }
+
     localStorage.setItem("isLoggedIn", "true");
     router.push("/forecast");
   }
@@ -50,36 +105,142 @@ export default function Login() {
           <p className="text-slate-500 text-sm">Ingresá con tu email de la empresa para participar</p>
         </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-bold text-slate-600">EMAIL CORPORATIVO</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-                      <Input
-                        placeholder="usuario@empresa.com"
-                        className="pl-10 py-6"
-                        data-testid="input-email"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="login">Ingresar</TabsTrigger>
+            <TabsTrigger value="register">Registrarse</TabsTrigger>
+          </TabsList>
 
-            <Button type="submit" className="w-full py-6 text-base" data-testid="btn-login">
-              Entrar
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </form>
-        </Form>
+          <TabsContent value="login">
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">EMAIL CORPORATIVO</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            placeholder="usuario@empresa.com"
+                            className="pl-10 py-6"
+                            data-testid="input-email"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {loginError ? (
+                  <p className="text-sm font-medium text-destructive" role="alert">
+                    {loginError}
+                  </p>
+                ) : null}
+
+                <Button
+                  type="submit"
+                  className="w-full py-2 text-base"
+                  data-testid="btn-login"
+                  disabled={isLoggingIn}
+                >
+                  {isLoggingIn ? "Validando..." : "Entrar"}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+
+          <TabsContent value="register">
+            <Form {...registerForm}>
+              <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-5">
+                <FormField
+                  control={registerForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">EMAIL CORPORATIVO</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            placeholder="usuario@empresa.com"
+                            className="pl-10 py-6"
+                            data-testid="input-register-email"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">NOMBRE</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            placeholder="Nombre"
+                            className="pl-10 py-6"
+                            data-testid="input-first-name"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">APELLIDO</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <IdCard className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            placeholder="Apellido"
+                            className="pl-10 py-6"
+                            data-testid="input-last-name"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {registerError ? (
+                  <p className="text-sm font-medium text-destructive" role="alert">
+                    {registerError}
+                  </p>
+                ) : null}
+
+                <Button
+                  type="submit"
+                  className="w-full py-2 text-base"
+                  data-testid="btn-register"
+                  disabled={isRegistering}
+                >
+                  {isRegistering ? "Registrando..." : "Crear cuenta"}
+                </Button>
+              </form>
+            </Form>
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-8 pt-6 border-t flex justify-center gap-6 text-sm">
           <a href="#" className="text-primary hover:underline font-medium">Dudas o Soporte</a>
