@@ -1,8 +1,11 @@
-import { Link, useLocation } from "wouter";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ClipboardList, History, BarChart2, BookOpen, LogOutIcon } from "lucide-react";
 
 export function Sidebar() {
-  const [location] = useLocation();
+  const pathname = usePathname();
 
   const navItems = [
     { href: "/forecast", icon: ClipboardList, label: "Pronósticos" },
@@ -20,7 +23,7 @@ export function Sidebar() {
 
       <nav className="flex-1 px-3 flex flex-col gap-0.5">
         {navItems.map((item) => {
-          const isActive = location === item.href;
+          const isActive = pathname === item.href;
           return (
             <Link key={item.href} href={item.href}>
               <div
@@ -40,7 +43,7 @@ export function Sidebar() {
       </nav>
 
       <div className="px-3 pb-6 pt-4">
-        <Link href="./">
+        <Link href="/">
           <button
             className="py-2.5 px-4  rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2"
             data-testid="btn-make-prediction-sidebar"

@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,13 +15,13 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
-  const [_, setLocation] = useLocation();
+  const router = useRouter();
 
   useEffect(() => {
     if (localStorage.getItem("isLoggedIn") === "true") {
-      setLocation("/forecast");
+      router.push("/forecast");
     }
-  }, [setLocation]);
+  }, [router]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -28,7 +30,7 @@ export default function Login() {
 
   function onSubmit(_values: z.infer<typeof loginSchema>) {
     localStorage.setItem("isLoggedIn", "true");
-    setLocation("/forecast");
+    router.push("/forecast");
   }
 
   return (

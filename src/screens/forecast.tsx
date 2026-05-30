@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Clock } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";

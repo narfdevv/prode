@@ -1,5 +1,8 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
-import { Link, useLocation } from "wouter";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { ClipboardList, History, BarChart2, BookOpen } from "lucide-react";
@@ -12,11 +15,11 @@ const mobileNavItems = [
 ];
 
 function MobileBottomNav() {
-  const [location] = useLocation();
+  const pathname = usePathname();
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex md:hidden items-center justify-around z-50">
       {mobileNavItems.map((item) => {
-        const isActive = location === item.href;
+        const isActive = pathname === item.href;
         return (
           <Link key={item.href} href={item.href}>
             <div
