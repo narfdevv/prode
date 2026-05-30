@@ -155,10 +155,6 @@ export default function Forecast() {
                 </div>
               </div>
 
-              <div className="text-center text-xs md:text-sm font-bold text-accent mb-3">
-                Puntos Potenciales: {m.points} pts
-              </div>
-
               {isSaved && !isEditing ? (
                 <Button variant="outline" className="w-full text-sm" onClick={() => handleEdit(m.id)} data-testid={`btn-edit-prediction-${m.id}`}>
                   Editar Pronóstico
