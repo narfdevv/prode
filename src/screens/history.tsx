@@ -1,13 +1,17 @@
 import { Download, ChevronDown } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Button } from "@/components/ui/button";
+import { CountryFlag } from "@/components/country-flag";
 
 const historyData = [
   {
     id: 1,
     date: "14 de junio, 2026",
     stage: "Grupo A • Partido inaugural",
-    matchup: "🇺🇸 USA vs MEX 🇲🇽",
+    homeTeam: "USA",
+    homeCountryCode: "US",
+    awayTeam: "MEX",
+    awayCountryCode: "MX",
     prediction: "2 - 1",
     result: "2 - 1",
     points: "+5 pts",
@@ -18,7 +22,10 @@ const historyData = [
     id: 2,
     date: "15 de junio, 2026",
     stage: "Grupo B • Partido 3",
-    matchup: "🇧🇷 BRA vs ALE 🇩🇪",
+    homeTeam: "BRA",
+    homeCountryCode: "BR",
+    awayTeam: "ALE",
+    awayCountryCode: "DE",
     prediction: "3 - 1",
     result: "2 - 0",
     points: "+1 pt",
@@ -29,7 +36,10 @@ const historyData = [
     id: 3,
     date: "16 de junio, 2026",
     stage: "Grupo C • Partido 5",
-    matchup: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 ING vs FRA 🇫🇷",
+    homeTeam: "ING",
+    homeCountryCode: "GB",
+    awayTeam: "FRA",
+    awayCountryCode: "FR",
     prediction: "0 - 2",
     result: "1 - 1",
     points: "+0 pts",
@@ -81,7 +91,15 @@ export default function History() {
                     <div className="font-bold text-xs md:text-sm">{row.date}</div>
                     <div className="text-slate-500 text-[11px] md:text-xs mt-0.5">{row.stage}</div>
                   </td>
-                  <td className="px-4 md:px-6 py-3 md:py-4 font-bold text-sm md:text-base">{row.matchup}</td>
+                  <td className="px-4 md:px-6 py-3 md:py-4 font-bold text-sm md:text-base">
+                    <div className="flex items-center gap-1.5 whitespace-nowrap">
+                      <CountryFlag countryCode={row.homeCountryCode} label={row.homeTeam} className="text-base" />
+                      <span>{row.homeTeam}</span>
+                      <span className="text-slate-400 px-1">vs</span>
+                      <span>{row.awayTeam}</span>
+                      <CountryFlag countryCode={row.awayCountryCode} label={row.awayTeam} className="text-base" />
+                    </div>
+                  </td>
                   <td className="px-4 md:px-6 py-3 md:py-4 text-center font-mono font-bold text-sm bg-slate-50">{row.prediction}</td>
                   <td className="px-4 md:px-6 py-3 md:py-4 text-center font-mono font-bold text-sm bg-slate-100/50">{row.result}</td>
                   <td className="px-4 md:px-6 py-3 md:py-4 text-right">

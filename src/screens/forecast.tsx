@@ -5,6 +5,7 @@ import { Clock } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { matches } from "@/data/matches";
 import { Button } from "@/components/ui/button";
+import { CountryFlag } from "@/components/country-flag";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -126,7 +127,9 @@ export default function Forecast() {
 
               <div className="flex justify-center items-end gap-3 md:gap-4 mb-5">
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-3xl md:text-4xl">{m.homeFlag}</span>
+                  <span className="text-3xl md:text-4xl">
+                    <CountryFlag countryCode={m.homeCountryCode} label={m.homeTeam} />
+                  </span>
                   <span className="font-bold text-xs md:text-sm">{m.homeTeam}</span>
                   <Input
                     className="w-12 h-12 md:w-14 md:h-14 text-center text-xl font-bold bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -138,7 +141,9 @@ export default function Forecast() {
                 </div>
                 <div className="text-lg font-bold text-slate-300 mb-3">:</div>
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-3xl md:text-4xl">{m.awayFlag}</span>
+                  <span className="text-3xl md:text-4xl">
+                    <CountryFlag countryCode={m.awayCountryCode} label={m.awayTeam} />
+                  </span>
                   <span className="font-bold text-xs md:text-sm">{m.awayTeam}</span>
                   <Input
                     className="w-12 h-12 md:w-14 md:h-14 text-center text-xl font-bold bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"

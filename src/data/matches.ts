@@ -2,9 +2,9 @@ export type Match = {
   id: string;
   group: string;
   homeTeam: string;
-  homeFlag: string;
+  homeCountryCode: string;
   awayTeam: string;
-  awayFlag: string;
+  awayCountryCode: string;
   closesIn: string;
   points: number;
   prediction?: { home: number; away: number };
@@ -16,9 +16,9 @@ export const matches: Match[] = [
     id: "m1",
     group: "Group A",
     homeTeam: "USA",
-    homeFlag: "🇺🇸",
+    homeCountryCode: "US",
     awayTeam: "CAN",
-    awayFlag: "🇨🇦",
+    awayCountryCode: "CA",
     closesIn: "5h 20m",
     points: 150,
     prediction: { home: 2, away: 1 },
@@ -27,9 +27,9 @@ export const matches: Match[] = [
     id: "m2",
     group: "Group B",
     homeTeam: "MEX",
-    homeFlag: "🇲🇽",
+    homeCountryCode: "MX",
     awayTeam: "BRA",
-    awayFlag: "🇧🇷",
+    awayCountryCode: "BR",
     closesIn: "1d 12h",
     points: 220,
     prediction: { home: 0, away: 0 },
@@ -38,9 +38,9 @@ export const matches: Match[] = [
     id: "m3",
     group: "Group C",
     homeTeam: "ARG",
-    homeFlag: "🇦🇷",
+    homeCountryCode: "AR",
     awayTeam: "ESP",
-    awayFlag: "🇪🇸",
+    awayCountryCode: "ES",
     closesIn: "2d 04h",
     points: 180,
   },
@@ -48,9 +48,9 @@ export const matches: Match[] = [
     id: "m4",
     group: "Group D",
     homeTeam: "ENG",
-    homeFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    homeCountryCode: "GB",
     awayTeam: "JPN",
-    awayFlag: "🇯🇵",
+    awayCountryCode: "JP",
     closesIn: "3d 10h",
     points: 200,
   },
@@ -58,9 +58,9 @@ export const matches: Match[] = [
     id: "m5",
     group: "Group A",
     homeTeam: "FRA",
-    homeFlag: "🇫🇷",
+    homeCountryCode: "FR",
     awayTeam: "GER",
-    awayFlag: "🇩🇪",
+    awayCountryCode: "DE",
     closesIn: "45m",
     points: 250,
     isUrgent: true,
