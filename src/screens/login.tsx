@@ -63,6 +63,8 @@ export default function Login() {
     }
 
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userEmail", result.user.email);
+    localStorage.setItem("userId", String(result.user.id));
     router.push("/forecast");
   }
 
@@ -85,6 +87,8 @@ export default function Login() {
     }
 
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userEmail", result.user.email);
+    localStorage.setItem("userId", String(result.user.id));
     router.push("/forecast");
   }
 

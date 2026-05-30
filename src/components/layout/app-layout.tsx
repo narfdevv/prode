@@ -5,12 +5,13 @@ import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
-import { ClipboardList, History, BarChart2, BookOpen } from "lucide-react";
+import { ClipboardList, History, BarChart2, BookOpen, Table2 } from "lucide-react";
 
 const mobileNavItems = [
   { href: "/forecast", icon: ClipboardList, label: "Pronósticos" },
   { href: "/history", icon: History, label: "Historial" },
   { href: "/leaderboard", icon: BarChart2, label: "Tabla" },
+  { href: "/groups", icon: Table2, label: "Grupos" },
   { href: "/rules", icon: BookOpen, label: "Reglamento" },
 ];
 

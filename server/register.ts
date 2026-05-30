@@ -8,7 +8,7 @@ type RegisterUserInput = {
 };
 
 type RegisterUserResult =
-  | { ok: true }
+  | { ok: true; user: { id: number; email: string } }
   | { ok: false; message: string; status: number };
 
 const supabase = createClient<Database>(
@@ -64,12 +64,16 @@ export async function registerUser(input: RegisterUserInput): Promise<RegisterUs
     };
   }
 
-  const { error: insertError } = await supabase.from("users").insert({
-    email,
-    first_name: input.firstName.trim(),
-    last_name: input.lastName.trim(),
-    company_id: allowedDomain.company_id,
-  });
+  const { data: user, error: insertError } = await supabase
+    .from("users")
+    .insert({
+      email,
+      first_name: input.firstName.trim(),
+      last_name: input.lastName.trim(),
+      company_id: allowedDomain.company_id,
+    })
+    .select("id, email")
+    .single();
 
 
   if (insertError) {
@@ -80,5 +84,5 @@ export async function registerUser(input: RegisterUserInput): Promise<RegisterUs
     };
   }
 
-  return { ok: true };
+  return { ok: true, user };
 }

@@ -6,7 +6,7 @@ type LoginUserInput = {
 };
 
 type LoginUserResult =
-  | { ok: true }
+  | { ok: true; user: { id: number; email: string } }
   | { ok: false; message: string; status: number };
 
 const supabase = createClient<Database>(
@@ -45,5 +45,5 @@ export async function loginUser(input: LoginUserInput): Promise<LoginUserResult>
     };
   }
 
-  return { ok: true };
+  return { ok: true, user };
 }
