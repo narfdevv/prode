@@ -385,8 +385,24 @@ export async function syncWorldCupResults(): Promise<ScoreSyncResult> {
   let scoredPredictions = 0;
 
   for (const item of fixtures) {
-    if (!FINISHED_STATUSES.has(item.status)) continue;
-    if (item.home_score === null || item.away_score === null) continue;
+    if (!FINISHED_STATUSES.has(item.status) || item.home_score === null || item.away_score === null) {
+      const kickoff = new Date(item.kickoff_at);
+      if (kickoff < new Date()) {
+        const { data: match } = await supabase
+          .from("matches")
+          .select("id, status")
+          .eq("api_id", item.api_id)
+          .maybeSingle();
+
+        if (match && !FINISHED_STATUSES.has(match.status)) {
+          await supabase
+            .from("matches")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("id", match.id);
+        }
+      }
+      continue;
+    }
 
     const { data: match, error: matchError } = await supabase
       .from("matches")
