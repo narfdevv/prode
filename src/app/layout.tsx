@@ -4,8 +4,11 @@ import { Providers } from "./providers";
 import "@/index.css";
 
 export const metadata: Metadata = {
-  title: "Prode 2026",
-  description: "FIFA 2026 Corporate Prode",
+  title: "Prode 2026 - Cybermapa",
+  description: "Prode 2026 Cybermapa",
+  icons: {
+    icon: "/favicon.jpg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -17,27 +17,27 @@ export default function Rules() {
           </div>
           <div className="p-5 md:p-6 flex-1 space-y-5 md:space-y-6">
             <div className="flex gap-3 md:gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0 text-sm">1</div>
+              <div className="w-8 h-8 rounded-full bg-primary text-white font-bold flex items-center justify-center shrink-0 text-sm">2</div>
               <div>
                 <h3 className="font-bold text-base md:text-lg text-slate-900">Acierto de Resultado</h3>
                 <p className="text-slate-600 text-xs md:text-sm mt-1">1 punto por acertar el equipo ganador o si el partido termina en empate, sin importar el marcador exacto.</p>
               </div>
             </div>
             <div className="flex gap-3 md:gap-4">
-              <div className="w-8 h-8 rounded-full bg-accent text-white font-bold flex items-center justify-center shrink-0 text-sm">+2</div>
+              <div className="w-8 h-8 rounded-full bg-accent text-white font-bold flex items-center justify-center shrink-0 text-sm">+3</div>
               <div>
                 <h3 className="font-bold text-base md:text-lg text-slate-900">Bono por Marcador Exacto</h3>
-                <p className="text-slate-600 text-xs md:text-sm mt-1">2 puntos adicionales si aciertas la cantidad exacta de goles de ambos equipos.</p>
+                <p className="text-slate-600 text-xs md:text-sm mt-1">3 puntos adicionales si aciertas la cantidad exacta de goles de ambos equipos.</p>
               </div>
             </div>
           </div>
           <div className="bg-primary text-primary-foreground p-5 md:p-6 flex items-center gap-3 md:gap-4">
             <div className="p-2.5 bg-white/10 rounded-full">
-              <Star className="w-5 h-5 md:w-6 md:h-6 text-secondary" />
+              <Star className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div>
               <div className="text-[10px] md:text-xs uppercase tracking-wider font-bold opacity-80">Máxima Puntuación</div>
-              <div className="text-base md:text-lg font-bold">Acierto Perfecto — 3 PUNTOS</div>
+              <div className="text-base md:text-lg font-bold">Acierto Perfecto — 5 PUNTOS</div>
             </div>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function Rules() {
           <div className="space-y-3 md:space-y-4 mb-6">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0 mt-0.5" />
-              <p className="text-xs md:text-sm text-slate-600 font-medium">Las predicciones cierran exactamente 15 minutos antes del horario oficial de inicio de cada partido.</p>
+              <p className="text-xs md:text-sm text-slate-600 font-medium">Las predicciones cierran exactamente 1 hora antes del horario oficial de inicio de cada partido.</p>
             </div>
             <div className="flex items-start gap-3">
               <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-accent shrink-0 mt-0.5" />
@@ -72,8 +72,8 @@ export default function Rules() {
         <h2 className="text-lg md:text-xl font-bold text-slate-900 mb-4 md:mb-6">Desempate en el Ranking</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { n: "1", title: "Marcadores Exactos", desc: "Mayor cantidad de partidos con el resultado exacto acertado (3 puntos)." },
-            { n: "2", title: "Resultados Correctos", desc: "Mayor cantidad de partidos donde se acertó ganador o empate (1 punto)." },
+            { n: "1", title: "Marcadores Exactos", desc: "Mayor cantidad de partidos con el resultado exacto acertado (5 puntos)." },
+            { n: "2", title: "Resultados Correctos", desc: "Mayor cantidad de partidos donde se acertó ganador o empate (2 puntos)." },
             { n: "3", title: "Primera Predicción", desc: "Usuario que haya registrado su primera predicción del torneo más temprano." },
           ].map((item) => (
             <div key={item.n} className="p-4 bg-slate-50 border rounded-lg">

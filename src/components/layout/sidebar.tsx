@@ -23,8 +23,8 @@ export function Sidebar() {
   return (
     <div className="fixed left-0 top-0 h-full w-[220px] bg-white border-r border-slate-200 flex flex-col">
       <div className="px-6 pt-6 pb-5">
-        <h2 className="text-primary text-base font-bold leading-tight">Prode 2026</h2>
-        <p className="text-slate-400 text-xs mt-0.5 uppercase tracking-wide font-medium">Torneo Global</p>
+        <h2 className="text-primary text-base font-bold leading-tight">Prode Mundial 2026</h2>
+        <p className="text-slate-400 text-xs mt-0.5 uppercase tracking-wide font-medium">Cybermapa</p>
       </div>
 
       <nav className="flex-1 px-3 flex flex-col gap-0.5">
@@ -35,7 +35,7 @@ export function Sidebar() {
               <div
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-sm ${
                   isActive
-                    ? "bg-secondary font-semibold text-primary"
+                    ? "border-2 border-primary font-semibold text-primary"
                     : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 }`}
                 data-testid={`nav-link-${item.label.toLowerCase()}`}
