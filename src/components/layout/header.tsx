@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { Clock3 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUserEmail } from "@/lib/current-user";
 
@@ -30,22 +31,23 @@ async function fetchCountdown(): Promise<CountdownData> {
   return response.json();
 }
 
-function formatCountdown(startsAt: string, now: number) {
+function getCountdownParts(startsAt: string, now: number) {
   const diff = new Date(startsAt).getTime() - now;
 
-  if (diff <= 0) return "Mundial iniciado";
+  if (diff <= 0) return null;
 
   const totalSeconds = Math.floor(diff / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  const paddedHours = String(hours).padStart(2, "0");
-  const paddedMinutes = String(minutes).padStart(2, "0");
-  const paddedSeconds = String(seconds).padStart(2, "0");
 
-  if (days > 0) return `${days}d ${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
-  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+  return [
+    { label: "Dias", value: String(days) },
+    { label: "Horas", value: String(hours).padStart(2, "0") },
+    { label: "Min", value: String(minutes).padStart(2, "0") },
+    { label: "Seg", value: String(seconds).padStart(2, "0") },
+  ];
 }
 
 export function Header() {
@@ -59,8 +61,8 @@ export function Header() {
     queryKey: ["worldcup-countdown"],
     queryFn: fetchCountdown,
   });
-  const countdownText = useMemo(
-    () => (countdown?.startsAt ? formatCountdown(countdown.startsAt, now) : null),
+  const countdownParts = useMemo(
+    () => (countdown?.startsAt ? getCountdownParts(countdown.startsAt, now) : null),
     [countdown?.startsAt, now],
   );
 
@@ -70,27 +72,46 @@ export function Header() {
   }, []);
 
   return (
-    <header className="h-14 md:h-[72px] bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
-      <h1 className="text-primary font-bold tracking-wide text-sm md:text-lg leading-tight">
-        <span className="sm:hidden">FIFA 2026 PRODE</span>
-                {countdownText ? (
+    <header className="h-16 md:h-[76px] bg-white border-b border-slate-200 flex items-center justify-between gap-3 px-4 md:px-8 sticky top-0 z-40">
+      <div className="min-w-0 flex-1">
+        {countdownParts ? (
           <div
-            className="hidden sm:flex items-center gap-1.5 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10"
+            className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 shadow-sm md:gap-3 md:px-3 md:py-2"
             title={countdown?.openingMatch}
           >
-            <span className="text-[10px] md:text-xs font-bold uppercase text-slate-500">Faltan</span>
-            <span className="text-xs md:text-sm font-bold text-primary">{countdownText}</span>
-          </div>
-        ) : null}
-      </h1>
-      <div className="flex items-center gap-2">
+            <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary sm:flex">
+              <Clock3 className="h-5 w-5" />
+            </div>
 
-        <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border">
+            <div className="grid grid-cols-4 gap-1.5 md:gap-2">
+              {countdownParts.map((part) => (
+                <div
+                  key={part.label}
+                  className="flex h-10 min-w-9 flex-col items-center justify-center rounded-md border border-slate-200 bg-white px-1 shadow-xs sm:h-11 sm:min-w-11 sm:px-1.5 md:h-12 md:min-w-14 md:px-2"
+                >
+                  <span className="font-mono text-sm font-extrabold leading-none text-slate-900 sm:text-base md:text-xl">
+                    {part.value}
+                  </span>
+                  <span className="mt-1 text-[8px] font-bold uppercase leading-none text-slate-500 sm:text-[9px] md:text-[10px]">
+                    {part.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <h1 className="text-sm font-bold leading-tight tracking-wide text-primary md:text-lg">
+            FIFA 2026 PRODE
+          </h1>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="flex items-center gap-2 rounded-full border bg-slate-100 px-3 py-1.5">
           <span className="font-bold text-primary text-sm">
             {isLoading ? "..." : data?.rank ? `#${data.rank}` : "S/P"}
           </span>
-          <div className="w-px h-3.5 bg-slate-300" />
-          <span className="text-xs md:text-sm font-medium text-slate-700">
+          <div className="hidden h-3.5 w-px bg-slate-300 sm:block" />
+          <span className="hidden text-xs font-medium text-slate-700 sm:inline md:text-sm">
             {data?.totalUsers ?? 0} usuarios
           </span>
         </div>
