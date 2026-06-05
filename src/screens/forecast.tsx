@@ -25,6 +25,8 @@ type Match = {
   prediction: { home: number; away: number } | null;
 };
 
+const MATCHDAY_FILTERS = ["Todos", "Fecha 1", "Fecha 2", "Fecha 3"];
+
 async function fetchMatches(): Promise<Match[]> {
   const email = getCurrentUserEmail();
   if (!email) throw new Error("Missing user email");
@@ -32,6 +34,41 @@ async function fetchMatches(): Promise<Match[]> {
   const response = await fetch(`/api/matches?email=${encodeURIComponent(email)}`);
   if (!response.ok) throw new Error("Could not load matches");
   return response.json();
+}
+
+function getMatchdayFromStage(stage: string) {
+  const match = stage.match(/fecha\s*(\d+)/i);
+  return match ? `Fecha ${match[1]}` : null;
+}
+
+function getMatchdaysByMatch(matches: Match[]) {
+  const matchdays = new Map<number, string>();
+  const groupedMatches = new Map<string, Match[]>();
+
+  matches.forEach((match) => {
+    const matchday = getMatchdayFromStage(match.stage);
+    if (matchday) {
+      matchdays.set(match.id, matchday);
+      return;
+    }
+
+    if (!match.stage.toLowerCase().startsWith("grupo ")) return;
+
+    const groupMatches = groupedMatches.get(match.stage) ?? [];
+    groupMatches.push(match);
+    groupedMatches.set(match.stage, groupMatches);
+  });
+
+  groupedMatches.forEach((groupMatches) => {
+    groupMatches
+      .sort((a, b) => new Date(a.kickoffAt).getTime() - new Date(b.kickoffAt).getTime())
+      .forEach((match, index) => {
+        const matchday = Math.floor(index / 2) + 1;
+        if (matchday <= 3) matchdays.set(match.id, `Fecha ${matchday}`);
+      });
+  });
+
+  return matchdays;
 }
 
 async function savePrediction(input: {
@@ -69,6 +106,7 @@ export default function Forecast() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeGroup, setActiveGroup] = useState("Todos");
+  const [activeMatchday, setActiveMatchday] = useState("Todos");
   const [draftPredictions, setDraftPredictions] = useState<Record<number, ScoreDraft>>({});
   const [editingMatches, setEditingMatches] = useState<Set<number>>(new Set());
   const { data: matches = [], isLoading } = useQuery({
@@ -92,7 +130,13 @@ export default function Forecast() {
   });
 
   const stages = useMemo(() => Array.from(new Set(matches.map((match) => match.stage))), [matches]);
-  const filteredMatches = matches.filter((match) => activeGroup === "Todos" || match.stage === activeGroup);
+  const matchdaysByMatch = useMemo(() => getMatchdaysByMatch(matches), [matches]);
+  const filteredMatches = matches.filter((match) => {
+    const groupMatches = activeGroup === "Todos" || match.stage === activeGroup;
+    const matchdayMatches = activeMatchday === "Todos" || matchdaysByMatch.get(match.id) === activeMatchday;
+
+    return groupMatches && matchdayMatches;
+  });
 
   const handleScoreChange = (matchId: number, team: "home" | "away", val: string) => {
     if (val === "" || /^[0-9]{1,2}$/.test(val)) {
@@ -137,12 +181,22 @@ export default function Forecast() {
         <p className="text-slate-500 mt-1 text-sm">Fixture oficial del Mundial 2026</p>
       </div>
 
-      <Tabs defaultValue="Todos" className="mb-6" onValueChange={setActiveGroup}>
+      <Tabs defaultValue="Todos" className="mb-3" onValueChange={setActiveGroup}>
         <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="Todos">Todos</TabsTrigger>
           {stages.map((stage) => (
             <TabsTrigger key={stage} value={stage}>
               {stage}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      <Tabs defaultValue="Todos" className="mb-6" onValueChange={setActiveMatchday}>
+        <TabsList className="flex-wrap h-auto gap-1">
+          {MATCHDAY_FILTERS.map((matchday) => (
+            <TabsTrigger key={matchday} value={matchday}>
+              {matchday}
             </TabsTrigger>
           ))}
         </TabsList>
