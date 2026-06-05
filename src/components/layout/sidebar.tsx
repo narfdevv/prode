@@ -17,6 +17,8 @@ export function Sidebar() {
 
   function handleLogout() {
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
     window.location.replace("/");
   }
 

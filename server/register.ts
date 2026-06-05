@@ -5,6 +5,7 @@ type RegisterUserInput = {
   email: string;
   firstName: string;
   lastName: string;
+  password: string;
 };
 
 type RegisterUserResult =
@@ -29,6 +30,7 @@ export async function registerUser(input: RegisterUserInput): Promise<RegisterUs
     p_email: email,
     p_first_name: input.firstName.trim(),
     p_last_name: input.lastName.trim(),
+    p_password: input.password,
   });
 
   if (error) {

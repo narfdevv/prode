@@ -3,6 +3,7 @@ import type { Database } from "@/lib/database.types";
 
 type LoginUserInput = {
   email: string;
+  password: string;
 };
 
 type LoginUserResult =
@@ -23,8 +24,9 @@ const supabase = createClient<Database>(
 export async function loginUser(input: LoginUserInput): Promise<LoginUserResult> {
   const email = input.email.trim().toLowerCase();
 
-  const { data: userExists, error } = await supabase.rpc("user_exists_by_email", {
+  const { data: credentialsAreValid, error } = await supabase.rpc("validate_user_credentials", {
     p_email: email,
+    p_password: input.password,
   });
 
   if (error) {
@@ -35,11 +37,11 @@ export async function loginUser(input: LoginUserInput): Promise<LoginUserResult>
     };
   }
 
-  if (!userExists) {
+  if (!credentialsAreValid) {
     return {
       ok: false,
       status: 404,
-      message: "No pudimos validar tu email. Intentá nuevamente.",
+      message: "Email o contraseña incorrectos.",
     };
   }
 

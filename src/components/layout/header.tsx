@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Clock3 } from "lucide-react";
+import { Clock3, LogOutIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUserEmail } from "@/lib/current-user";
 
@@ -71,6 +71,13 @@ export function Header() {
     return () => window.clearInterval(interval);
   }, []);
 
+  function handleLogout() {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
+    window.location.replace("/");
+  }
+
   return (
     <header className="h-16 md:h-[76px] bg-white border-b border-slate-200 flex items-center justify-between gap-3 px-4 md:px-8 sticky top-0 z-40">
       <div className="min-w-0 flex-1">
@@ -115,6 +122,15 @@ export function Header() {
             {data?.totalUsers ?? 0} usuarios
           </span>
         </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:text-primary md:hidden"
+          aria-label="Cerrar sesión"
+          data-testid="btn-logout-mobile"
+        >
+          <LogOutIcon className="h-4 w-4" />
+        </button>
       </div>
     </header>
   );

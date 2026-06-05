@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, ArrowRight, User, IdCard } from "lucide-react";
+import { Mail, User, IdCard, Lock, Eye, EyeOff } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,18 @@ import cybLogo from "@/assets/cyb-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Ingresá un email corporativo válido"),
+  password: z.string().min(6, "Ingresá tu contraseña"),
 });
 
 const registerSchema = z.object({
   email: z.string().email("Ingresá un email corporativo válido"),
   firstName: z.string().min(2, "Ingresá tu nombre"),
   lastName: z.string().min(2, "Ingresá tu apellido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  confirmPassword: z.string().min(6, "Repetí la contraseña"),
+}).refine((values) => values.password === values.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
 });
 
 export default function Login() {
@@ -29,6 +35,9 @@ export default function Login() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("isLoggedIn") === "true") {
@@ -38,12 +47,12 @@ export default function Login() {
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "" },
+    defaultValues: { email: "", password: "" },
   });
 
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", firstName: "", lastName: "" },
+    defaultValues: { email: "", firstName: "", lastName: "", password: "", confirmPassword: "" },
   });
 
   function completeLogin(email: string) {
@@ -77,11 +86,12 @@ export default function Login() {
   async function onRegister(values: z.infer<typeof registerSchema>) {
     setIsRegistering(true);
     setRegisterError(null);
+    const { confirmPassword: _confirmPassword, ...payload } = values;
 
     const response = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json().catch(() => null);
@@ -140,6 +150,37 @@ export default function Login() {
                             data-testid="input-email"
                             {...field}
                           />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">CONTRASEÑA</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            type={showLoginPassword ? "text" : "password"}
+                            placeholder="Contraseña"
+                            className="pl-10 pr-10 py-6"
+                            data-testid="input-password"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-3 h-5 w-5 text-slate-400 hover:text-slate-600"
+                            onClick={() => setShowLoginPassword((value) => !value)}
+                            aria-label={showLoginPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                          >
+                            {showLoginPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -227,6 +268,68 @@ export default function Login() {
                             data-testid="input-last-name"
                             {...field}
                           />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">CONTRASEÑA</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            type={showRegisterPassword ? "text" : "password"}
+                            placeholder="Mínimo 6 caracteres"
+                            className="pl-10 pr-10 py-6"
+                            data-testid="input-register-password"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-3 h-5 w-5 text-slate-400 hover:text-slate-600"
+                            onClick={() => setShowRegisterPassword((value) => !value)}
+                            aria-label={showRegisterPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                          >
+                            {showRegisterPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={registerForm.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold text-slate-600">REPETIR CONTRASEÑA</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                          <Input
+                            type={showRegisterConfirmPassword ? "text" : "password"}
+                            placeholder="Repetí la contraseña"
+                            className="pl-10 pr-10 py-6"
+                            data-testid="input-register-confirm-password"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-3 h-5 w-5 text-slate-400 hover:text-slate-600"
+                            onClick={() => setShowRegisterConfirmPassword((value) => !value)}
+                            aria-label={showRegisterConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                          >
+                            {showRegisterConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage />

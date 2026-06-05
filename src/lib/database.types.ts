@@ -175,6 +175,7 @@ export type Database = {
           first_name: string
           id: number
           last_name: string
+          password_hash: string | null
         }
         Insert: {
           company_id?: number | null
@@ -183,6 +184,7 @@ export type Database = {
           first_name: string
           id?: never
           last_name: string
+          password_hash?: string | null
         }
         Update: {
           company_id?: number | null
@@ -191,6 +193,7 @@ export type Database = {
           first_name?: string
           id?: never
           last_name?: string
+          password_hash?: string | null
         }
         Relationships: [
           {
@@ -221,6 +224,14 @@ export type Database = {
           p_email: string
           p_first_name: string
           p_last_name: string
+          p_password: string
+        }
+        Returns: boolean
+      }
+      validate_user_credentials: {
+        Args: {
+          p_email: string
+          p_password: string
         }
         Returns: boolean
       }
