@@ -6,12 +6,12 @@ type LoginUserInput = {
 };
 
 type LoginUserResult =
-  | { ok: true; user: { id: number; email: string } }
+  | { ok: true }
   | { ok: false; message: string; status: number };
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
   {
     auth: {
       persistSession: false,
@@ -23,11 +23,9 @@ const supabase = createClient<Database>(
 export async function loginUser(input: LoginUserInput): Promise<LoginUserResult> {
   const email = input.email.trim().toLowerCase();
 
-  const { data: user, error } = await supabase
-    .from("users")
-    .select("id, email")
-    .eq("email", email)
-    .maybeSingle();
+  const { data: userExists, error } = await supabase.rpc("user_exists_by_email", {
+    p_email: email,
+  });
 
   if (error) {
     return {
@@ -37,13 +35,13 @@ export async function loginUser(input: LoginUserInput): Promise<LoginUserResult>
     };
   }
 
-  if (!user) {
+  if (!userExists) {
     return {
       ok: false,
       status: 404,
-      message: "No encontramos un usuario registrado con ese email.",
+      message: "No pudimos validar tu email. Intentá nuevamente.",
     };
   }
 
-  return { ok: true, user };
+  return { ok: true };
 }

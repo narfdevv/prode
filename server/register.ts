@@ -8,12 +8,12 @@ type RegisterUserInput = {
 };
 
 type RegisterUserResult =
-  | { ok: true; user: { id: number; email: string } }
+  | { ok: true }
   | { ok: false; message: string; status: number };
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
   {
     auth: {
       persistSession: false,
@@ -22,61 +22,16 @@ const supabase = createClient<Database>(
   },
 );
 
-function getEmailDomain(email: string) {
-  return email.trim().toLowerCase().split("@")[1] ?? "";
-}
-
 export async function registerUser(input: RegisterUserInput): Promise<RegisterUserResult> {
   const email = input.email.trim().toLowerCase();
-  const domain = getEmailDomain(email);
-  const domainVariants = [domain, `@${domain}`];
 
+  const { data: wasRegistered, error } = await supabase.rpc("register_user_if_allowed", {
+    p_email: email,
+    p_first_name: input.firstName.trim(),
+    p_last_name: input.lastName.trim(),
+  });
 
-  const { data: allowedDomain, error: domainError } = await supabase
-    .from("allowed_domains")
-    .select("id, domain, company_id, active")
-    .in("domain", domainVariants)
-    .eq("active", true)
-    .maybeSingle();
-
-
-  if (!allowedDomain) {
-    const { data: visibleDomains, error: visibleDomainsError } = await supabase
-      .from("allowed_domains")
-      .select("id, domain, company_id, active")
-      .limit(20);
-
-  }
-
-  if (domainError) {
-    return {
-      ok: false,
-      status: 500,
-      message: "No pudimos validar el dominio del email. Intentá nuevamente.",
-    };
-  }
-
-  if (!allowedDomain) {
-    return {
-      ok: false,
-      status: 403,
-      message: "El dominio de tu email no está habilitado para registrarse.",
-    };
-  }
-
-  const { data: user, error: insertError } = await supabase
-    .from("users")
-    .insert({
-      email,
-      first_name: input.firstName.trim(),
-      last_name: input.lastName.trim(),
-      company_id: allowedDomain.company_id,
-    })
-    .select("id, email")
-    .single();
-
-
-  if (insertError) {
+  if (error) {
     return {
       ok: false,
       status: 500,
@@ -84,5 +39,13 @@ export async function registerUser(input: RegisterUserInput): Promise<RegisterUs
     };
   }
 
-  return { ok: true, user };
+  if (!wasRegistered) {
+    return {
+      ok: false,
+      status: 403,
+      message: "No pudimos completar el registro con esos datos.",
+    };
+  }
+
+  return { ok: true };
 }

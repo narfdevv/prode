@@ -46,6 +46,13 @@ export default function Login() {
     defaultValues: { email: "", firstName: "", lastName: "" },
   });
 
+  function completeLogin(email: string) {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("userEmail", email.trim().toLowerCase());
+    localStorage.removeItem("userId");
+    router.push("/forecast");
+  }
+
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoggingIn(true);
     setLoginError(null);
@@ -64,10 +71,7 @@ export default function Login() {
       return;
     }
 
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userEmail", result.user.email);
-    localStorage.setItem("userId", String(result.user.id));
-    router.push("/forecast");
+    completeLogin(values.email);
   }
 
   async function onRegister(values: z.infer<typeof registerSchema>) {
@@ -88,10 +92,7 @@ export default function Login() {
       return;
     }
 
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userEmail", result.user.email);
-    localStorage.setItem("userId", String(result.user.id));
-    router.push("/forecast");
+    completeLogin(values.email);
   }
 
   return (

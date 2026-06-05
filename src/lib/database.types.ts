@@ -216,7 +216,20 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      register_user_if_allowed: {
+        Args: {
+          p_email: string
+          p_first_name: string
+          p_last_name: string
+        }
+        Returns: boolean
+      }
+      user_exists_by_email: {
+        Args: {
+          p_email: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
