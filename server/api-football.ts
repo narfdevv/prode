@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { getKickoffTime } from "@/lib/match-time";
 
 const WORLD_CUP_API_BASE_URL = process.env.WORLD_CUP_API_BASE_URL ?? "https://worldcup26.ir";
 const FINISHED_STATUSES = new Set(["FT", "AET", "PEN"]);
@@ -386,8 +387,7 @@ export async function syncWorldCupResults(): Promise<ScoreSyncResult> {
 
   for (const item of fixtures) {
     if (!FINISHED_STATUSES.has(item.status) || item.home_score === null || item.away_score === null) {
-      const kickoff = new Date(item.kickoff_at);
-      if (kickoff < new Date()) {
+      if (getKickoffTime(item.kickoff_at) < Date.now()) {
         const { data: match } = await supabase
           .from("matches")
           .select("id, status")

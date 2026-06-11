@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Clock3, LogOutIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUserEmail } from "@/lib/current-user";
+import { getKickoffTime } from "@/lib/match-time";
 
 type UserSummary = {
   rank: number | null;
@@ -32,7 +33,7 @@ async function fetchCountdown(): Promise<CountdownData> {
 }
 
 function getCountdownParts(startsAt: string, now: number) {
-  const diff = new Date(startsAt).getTime() - now;
+  const diff = getKickoffTime(startsAt) - now;
 
   if (diff <= 0) return null;
 

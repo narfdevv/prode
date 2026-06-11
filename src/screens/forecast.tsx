@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { getCurrentUserEmail } from "@/lib/current-user";
+import { getKickoffTime, getPredictionDeadline } from "@/lib/match-time";
 
 type ScoreDraft = { home: string; away: string };
 
@@ -61,7 +62,7 @@ function getMatchdaysByMatch(matches: Match[]) {
 
   groupedMatches.forEach((groupMatches) => {
     groupMatches
-      .sort((a, b) => new Date(a.kickoffAt).getTime() - new Date(b.kickoffAt).getTime())
+      .sort((a, b) => getKickoffTime(a.kickoffAt) - getKickoffTime(b.kickoffAt))
       .forEach((match, index) => {
         const matchday = Math.floor(index / 2) + 1;
         if (matchday <= 3) matchdays.set(match.id, `Fecha ${matchday}`);
@@ -89,7 +90,7 @@ async function savePrediction(input: {
 }
 
 function formatTimeUntil(value: string) {
-  const diff = new Date(value).getTime() - Date.now();
+  const diff = getPredictionDeadline(value) - Date.now();
   if (diff <= 0) return "cerrado";
 
   const minutes = Math.floor(diff / 60000);
@@ -226,7 +227,7 @@ export default function Forecast() {
 
           const closesIn = formatTimeUntil(m.kickoffAt);
           const inputsClosed = closesIn === "cerrado";
-          const isUrgent = !inputsClosed && new Date(m.kickoffAt).getTime() - Date.now() < 60 * 60 * 1000;
+          const isUrgent = !inputsClosed && getPredictionDeadline(m.kickoffAt) - Date.now() < 60 * 60 * 1000;
 
           return (
             <div

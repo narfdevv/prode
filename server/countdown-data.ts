@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { getKickoffTime } from "@/lib/match-time";
 import { fetchWorldCupFixtures } from "./api-football";
 
 const supabase = createClient<Database>(
@@ -32,7 +33,7 @@ export async function getWorldCupCountdown() {
 
   const fixtures = await fetchWorldCupFixtures();
   const openingMatch = fixtures.sort(
-    (a, b) => new Date(a.kickoff_at).getTime() - new Date(b.kickoff_at).getTime(),
+    (a, b) => getKickoffTime(a.kickoff_at) - getKickoffTime(b.kickoff_at),
   )[0];
 
   if (!openingMatch) {

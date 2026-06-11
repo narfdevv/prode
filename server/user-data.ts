@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { getKickoffTime } from "@/lib/match-time";
 import { checkAndSyncMatches } from "./matches-data";
 
 const supabase = createClient<Database>(
@@ -152,7 +153,7 @@ function formatMatchDate(value: string) {
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(value));
+  }).format(new Date(getKickoffTime(value)));
 }
 
 export async function getHistory(email: string) {

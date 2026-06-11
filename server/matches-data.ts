@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { getKickoffTime, getPredictionDeadline } from "@/lib/match-time";
 import { syncWorldCupResults } from "./api-football";
 
 const supabase = createClient<Database>(
@@ -26,8 +27,7 @@ export async function checkAndSyncMatches() {
 
   // Evaluar si alguno empezó hace más de 105 minutos y fue actualizado hace más de 3 minutos
   const needsSync = matches.some((match) => {
-    const kickoff = new Date(match.kickoff_at);
-    const minutesSinceKickoff = (now.getTime() - kickoff.getTime()) / (1000 * 60);
+    const minutesSinceKickoff = (now.getTime() - getKickoffTime(match.kickoff_at)) / (1000 * 60);
 
     if (minutesSinceKickoff > 105) {
       const updatedAt = new Date(match.updated_at || match.kickoff_at);
@@ -115,6 +115,18 @@ export async function savePrediction(
 
   if (userError) throw userError;
   if (!user) throw new Error("User not found");
+
+  const { data: match, error: matchError } = await supabase
+    .from("matches")
+    .select("kickoff_at")
+    .eq("id", matchId)
+    .maybeSingle();
+
+  if (matchError) throw matchError;
+  if (!match) throw new Error("Match not found");
+  if (Date.now() >= getPredictionDeadline(match.kickoff_at)) {
+    throw new Error("Predictions are closed for this match");
+  }
 
   const { data: existing, error: findError } = await supabase
     .from("predictions")
