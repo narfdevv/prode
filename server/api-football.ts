@@ -103,6 +103,7 @@ function toIsoCountryCode(teamName: string, apiCode: string | null) {
     CRO: "HR",
     DEN: "DK",
     ECU: "EC",
+    EGY: "EG",
     ENG: "ENG",
     FRA: "FR",
     GER: "DE",

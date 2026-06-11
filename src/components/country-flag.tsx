@@ -8,6 +8,10 @@ type CountryFlagProps = {
 
 export function CountryFlag({ countryCode, label, className }: CountryFlagProps) {
   const normalizedCode = countryCode.toLowerCase();
+  const fifaCountryCodes: Record<string, string> = {
+    egy: "EG",
+  };
+  const displayCountryCode = fifaCountryCodes[normalizedCode] ?? countryCode;
   const subdivisionFlags: Record<string, string> = {
     eng: "https://flagcdn.com/gb-eng.svg",
     sco: "https://flagcdn.com/gb-sct.svg",
@@ -25,7 +29,7 @@ export function CountryFlag({ countryCode, label, className }: CountryFlagProps)
         />
       ) : (
         <ReactCountryFlag
-          countryCode={countryCode}
+          countryCode={displayCountryCode}
           svg
           aria-label={label}
           title={label}
