@@ -130,9 +130,13 @@ export default function Forecast() {
     },
   });
 
-  const stages = useMemo(() => Array.from(new Set(matches.map((match) => match.stage))), [matches]);
-  const matchdaysByMatch = useMemo(() => getMatchdaysByMatch(matches), [matches]);
-  const filteredMatches = matches.filter((match) => {
+  const openMatches = useMemo(
+    () => matches.filter((match) => Date.now() < getPredictionDeadline(match.kickoffAt)),
+    [matches],
+  );
+  const stages = useMemo(() => Array.from(new Set(openMatches.map((match) => match.stage))), [openMatches]);
+  const matchdaysByMatch = useMemo(() => getMatchdaysByMatch(openMatches), [openMatches]);
+  const filteredMatches = openMatches.filter((match) => {
     const groupMatches = activeGroup === "Todos" || match.stage === activeGroup;
     const matchdayMatches = activeMatchday === "Todos" || matchdaysByMatch.get(match.id) === activeMatchday;
 
@@ -206,7 +210,7 @@ export default function Forecast() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {!isLoading && filteredMatches.length === 0 ? (
           <div className="sm:col-span-2 lg:col-span-3 bg-white rounded-xl border shadow-sm p-8 text-center text-slate-500">
-            Todavía no hay partidos sincronizados.
+            No hay partidos abiertos para pronosticar.
           </div>
         ) : null}
         {filteredMatches.map((m) => {
