@@ -130,17 +130,15 @@ export default function Forecast() {
     },
   });
 
-  const openMatches = useMemo(
-    () => matches.filter((match) => Date.now() < getPredictionDeadline(match.kickoffAt)),
-    [matches],
-  );
-  const stages = useMemo(() => Array.from(new Set(openMatches.map((match) => match.stage))), [openMatches]);
-  const matchdaysByMatch = useMemo(() => getMatchdaysByMatch(openMatches), [openMatches]);
-  const filteredMatches = openMatches.filter((match) => {
+  const stages = useMemo(() => Array.from(new Set(matches.map((match) => match.stage))), [matches]);
+  const matchdaysByMatch = useMemo(() => getMatchdaysByMatch(matches), [matches]);
+  const filteredMatches = matches.filter((match) => {
     const groupMatches = activeGroup === "Todos" || match.stage === activeGroup;
     const matchdayMatches = activeMatchday === "Todos" || matchdaysByMatch.get(match.id) === activeMatchday;
+    const matchIsOpen = Date.now() < getPredictionDeadline(match.kickoffAt);
+    const showClosedMatch = activeGroup !== "Todos";
 
-    return groupMatches && matchdayMatches;
+    return groupMatches && matchdayMatches && (matchIsOpen || showClosedMatch);
   });
 
   const handleScoreChange = (matchId: number, team: "home" | "away", val: string) => {
