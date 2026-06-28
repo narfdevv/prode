@@ -56,7 +56,6 @@ type WorldCupGroup = {
 
 type SyncResult = {
   fetched: number;
-  inserted: number;
   updated: number;
 };
 
@@ -344,45 +343,9 @@ export async function getWorldCupGroups() {
     }));
 }
 
-export async function syncWorldCupFixtures(): Promise<SyncResult> {
-  const fixtures = await fetchWorldCupFixtures();
-  let inserted = 0;
-  let updated = 0;
-
-  for (const item of fixtures) {
-    const { data: existing, error: findError } = await supabase
-      .from("matches")
-      .select("id")
-      .eq("api_id", item.api_id)
-      .maybeSingle();
-
-    if (findError) throw findError;
-
-    if (existing) {
-      const { error } = await supabase.from("matches").update(item).eq("id", existing.id);
-      if (error) throw error;
-      updated += 1;
-      continue;
-    }
-
-    const { error } = await supabase.from("matches").insert({
-      ...item,
-      id: item.api_id,
-    });
-    if (error) throw error;
-    inserted += 1;
-  }
-
-  return {
-    fetched: fixtures.length,
-    inserted,
-    updated,
-  };
-}
 
 export async function syncWorldCupResults(): Promise<ScoreSyncResult> {
   const fixtures = await fetchWorldCupFixtures();
-  let inserted = 0;
   let updated = 0;
   let scoredPredictions = 0;
 
@@ -413,26 +376,19 @@ export async function syncWorldCupResults(): Promise<ScoreSyncResult> {
 
     if (matchError) throw matchError;
 
-    if (!match) {
-      const { error } = await supabase.from("matches").insert({
-        ...item,
-        id: item.api_id,
-      });
-      if (error) throw error;
-      inserted += 1;
-    } else {
-      const { error } = await supabase
-        .from("matches")
-        .update({
-          home_score: item.home_score,
-          away_score: item.away_score,
-          status: item.status,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", match.id);
-      if (error) throw error;
-      updated += 1;
-    }
+    if (!match) continue;
+
+    const { error } = await supabase
+      .from("matches")
+      .update({
+        home_score: item.home_score,
+        away_score: item.away_score,
+        status: item.status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", match.id);
+    if (error) throw error;
+    updated += 1;
 
     const matchId = match?.id ?? item.api_id;
     const { data: predictions, error: predictionsError } = await supabase
@@ -464,7 +420,6 @@ export async function syncWorldCupResults(): Promise<ScoreSyncResult> {
 
   return {
     fetched: fixtures.length,
-    inserted,
     updated,
     scoredPredictions,
   };

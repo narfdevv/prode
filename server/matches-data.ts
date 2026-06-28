@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
-import { getKickoffTime, getPredictionDeadline } from "@/lib/match-time";
-import { syncWorldCupResults } from "./api-football";
+import { getPredictionDeadline } from "@/lib/match-time";
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,41 +13,7 @@ const supabase = createClient<Database>(
   },
 );
 
-export async function checkAndSyncMatches() {
-  const now = new Date();
-
-  // Obtener partidos que no están finalizados en nuestra base de datos
-  const { data: matches, error } = await supabase
-    .from("matches")
-    .select("id, kickoff_at, status, updated_at")
-    .not("status", "in", '("FT","AET","PEN")');
-
-  if (error || !matches || matches.length === 0) return;
-
-  // Evaluar si alguno empezó hace más de 105 minutos y fue actualizado hace más de 3 minutos
-  const needsSync = matches.some((match) => {
-    const minutesSinceKickoff = (now.getTime() - getKickoffTime(match.kickoff_at)) / (1000 * 60);
-
-    if (minutesSinceKickoff > 105) {
-      const updatedAt = new Date(match.updated_at || match.kickoff_at);
-      const minutesSinceUpdate = (now.getTime() - updatedAt.getTime()) / (1000 * 60);
-      return minutesSinceUpdate > 3; // Límite de 3 minutos de throttling
-    }
-    return false;
-  });
-
-  if (needsSync) {
-    try {
-      console.log("Lazy sync triggered for active/finished matches...");
-      await syncWorldCupResults();
-    } catch (err) {
-      console.error("Error doing lazy sync:", err);
-    }
-  }
-}
-
 export async function getMatchesWithPredictions(email: string) {
-  await checkAndSyncMatches();
   const normalizedEmail = email.trim().toLowerCase();
 
   const { data: user, error: userError } = await supabase

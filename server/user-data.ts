@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { getKickoffTime } from "@/lib/match-time";
-import { checkAndSyncMatches } from "./matches-data";
 
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,7 +58,6 @@ async function getLeaderboardRows() {
 }
 
 export async function getLeaderboard(email: string): Promise<LeaderboardEntry[]> {
-  await checkAndSyncMatches();
   const [currentUser, rows] = await Promise.all([getCurrentUser(email), getLeaderboardRows()]);
   const userIds = rows.map((row) => row.id).filter((id): id is number => id !== null);
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorldCupGroups } from "../../../../server/api-football";
+import { getWorldCupGroups } from "../../../../server/groups-data";
 
 export async function GET() {
   try {
