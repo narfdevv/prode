@@ -65,7 +65,6 @@ export async function getMatchesWithPredictions(email: string) {
       supabase
         .from("matches")
         .select("id, kickoff_at, stage, home_team, home_team_code, away_team, away_team_code, status")
-        .like("stage", "Grupo %")
         .order("kickoff_at", { ascending: true }),
       supabase
         .from("predictions")
