@@ -67,6 +67,16 @@ export default function Rules() {
           </div>
         </div>
       </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 p-5 md:p-6 mb-4 md:mb-6">
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 md:p-6">
+          <h3 className="font-bold text-primary mb-2 text-base md:text-lg">Fase de Grupos</h3>
+          <p className="text-xs md:text-sm text-slate-700">Todos los pronósticos se basan en el resultado al finalizar los 90 minutos reglamentarios, incluyendo el tiempo de descuento otorgado por el árbitro.</p>
+        </div>
+        <div className="bg-accent/5 border border-accent/20 rounded-xl p-5 md:p-6">
+          <h3 className="font-bold text-accent mb-2 text-base md:text-lg">Eliminatorias</h3>
+          <p className="text-xs md:text-sm text-slate-700">Para partidos de eliminación directa, el resultado válido incluye los 90 minutos + tiempo extra si lo hubiera. No se contabilizan los penales para el resultado final.</p>
+        </div>
+      </div>
 
       <div className="bg-white rounded-xl border shadow-sm p-5 md:p-6 mb-4 md:mb-6">
         <h2 className="text-lg md:text-xl font-bold text-slate-900 mb-4 md:mb-6">Desempate en el Ranking</h2>
@@ -85,16 +95,7 @@ export default function Rules() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 md:p-6">
-          <h3 className="font-bold text-primary mb-2 text-base md:text-lg">Fase de Grupos</h3>
-          <p className="text-xs md:text-sm text-slate-700">Todos los pronósticos se basan en el resultado al finalizar los 90 minutos reglamentarios, incluyendo el tiempo de descuento otorgado por el árbitro.</p>
-        </div>
-        <div className="bg-accent/5 border border-accent/20 rounded-xl p-5 md:p-6">
-          <h3 className="font-bold text-accent mb-2 text-base md:text-lg">Eliminatorias</h3>
-          <p className="text-xs md:text-sm text-slate-700">Para partidos de eliminación directa, el resultado válido incluye los 120 minutos (tiempo extra si lo hubiera). No se contabilizan los penales para el resultado final.</p>
-        </div>
-      </div>
+
     </AppLayout>
   );
 }

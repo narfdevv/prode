@@ -115,11 +115,11 @@ export function Header() {
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <div className="flex items-center gap-2 rounded-full border bg-slate-100 px-3 py-1.5">
-          <span className="font-bold text-primary text-sm">
+          <span className="font-bold text-primary text-sm" suppressHydrationWarning>
             {isLoading ? "..." : data?.rank ? `#${data.rank}` : "S/P"}
           </span>
           <div className="hidden h-3.5 w-px bg-slate-300 sm:block" />
-          <span className="hidden text-xs font-medium text-slate-700 sm:inline md:text-sm">
+          <span className="hidden text-xs font-medium text-slate-700 sm:inline md:text-sm" suppressHydrationWarning>
             {data?.totalUsers ?? 0} usuarios
           </span>
         </div>
